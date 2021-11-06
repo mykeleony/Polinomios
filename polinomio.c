@@ -125,7 +125,7 @@ void excluiNulos (POLINOMIO polinomio) {
   TERMO* i = polinomio.cabeca->ant;
 
   while (i != polinomio.cabeca) {
-    if (i->coeficiente == 0)
+    if (i->coeficiente == 0)  // Caso o coeficiente seja nulo, o termo é excluído do polinômio.
       excluiTermo(i->expoente, &polinomio);
 
     i = i->ant;
@@ -260,18 +260,18 @@ POLINOMIO multiplicaPolinomios (POLINOMIO polinomio1, POLINOMIO polinomio2) {
   TERMO* i = polinomio1.cabeca->ant;
   TERMO* j = polinomio2.cabeca->ant;
 
-  POLINOMIO resultado;
+  POLINOMIO resultado;  // Polinômio que conterá o polinômio resultante da multiplicação.
   inicializaPolinomio(&resultado);
 
-  while (j != polinomio2.cabeca) {
-    while (i != polinomio1.cabeca) {
+  while (j != polinomio2.cabeca) {  // Cada termo do polinômio 2 perspassa todos os termos do polinômio 1.
+    while (i != polinomio1.cabeca) {  // Multiplicando os coeficientes e somando os expoentes.
       insereTermo (i->coeficiente * j->coeficiente, i->expoente + j->expoente, &resultado);
 
       i = i->ant;
     }
 
-    j = j->ant;
-    i = polinomio1.cabeca->ant;
+    j = j->ant; // Passa para o próximo termo do polinômio 2.
+    i = polinomio1.cabeca->ant; // Ajusta o iterador novamente ao último elemento do polinômio 1.
   }
 
   return resultado;
