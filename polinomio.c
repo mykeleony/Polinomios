@@ -1,5 +1,7 @@
 /**************************************************************/
-/* Autor: Myke Leony dos Santos Amorim
+/* Aluno: Myke Leony dos Santos Amorim
+/* Número USP: 12543721
+/* Disciplina/Ano/EP: ACH2023/2021/EP1
 /**************************************************************/
 
 #include <stdio.h>
@@ -140,7 +142,7 @@ TIPOCHAVE grauPolinomio (POLINOMIO polinomio) {
 
 // Imprime o conteúdo de um polinômio:
 void imprimePolinomio (POLINOMIO polinomio) {
-  excluiNulos(polinomio);
+  excluiNulos(polinomio); // Retirando os termos de coeficientes nulos do polinômio.
 
   TERMO* i = polinomio.cabeca->ant; // Como polinômios são escritos em ordem decrescente de expoente, é necessário começar a impressão pelo fim.
 
@@ -151,32 +153,32 @@ void imprimePolinomio (POLINOMIO polinomio) {
         if (i->coeficiente == 1 && i->ant->coeficiente <= 0 && i->expoente > 1)  // Caso o coeficiente seja 1, esse deve ser omitido. Além disso, se o próximo coeficiente for negativo ou nulo, o sinal negativo ficará explícito ou nada será imprimido.
           fprintf(saida, "x^%d", i->expoente);
 
-        else if (i->coeficiente == 1 && i->ant->coeficiente > 0 && i->expoente == 1)  // Caso o coeficiente seja 1, esse deve ser omitido. Além disso, se o próximo coeficiente for negativo ou nulo, o sinal negativo ficará explícito ou nada será imprimido.
+        else if (i->coeficiente == 1 && i->ant->coeficiente > 0 && i->expoente == 1)  // Caso o coeficiente seguinte seja positivo, o sinal positivo deve ser inserido antes.
           fprintf(saida, "x+");
 
-        else if (i->coeficiente == 1 && i->ant->coeficiente <= 0 && i->expoente == 1)  // Caso o coeficiente seja 1, esse deve ser omitido. Além disso, se o próximo coeficiente for negativo ou nulo, o sinal negativo ficará explícito ou nada será imprimido.
+        else if (i->coeficiente == 1 && i->ant->coeficiente <= 0 && i->expoente == 1)  // Caso o expoente seja 1, esse deve ser omitido.
           fprintf(saida, "x");
 
-        else if (i->coeficiente == 1 && i->ant->coeficiente > 0)
+        else if (i->coeficiente == 1 && i->ant->coeficiente > 0)  // Coeficiente omitido e expoente explícito.
           fprintf(saida, "x^%d+", i->expoente);
 
         else if (i->coeficiente == -1 && i->ant->coeficiente <= 0)  // Caso o coeficiente seja -1, esse também deve ser omitido.
           fprintf(saida, "-x^%d", i->expoente);
 
-        else if (i->coeficiente == -1 && i->ant->coeficiente > 0)
+        else if (i->coeficiente == -1 && i->ant->coeficiente > 0) // Coeficiente omitido e sinal positivo explícito.
           fprintf(saida, "-x^%d+", i->expoente);
 
         else if (i->expoente == 0)
           fprintf(saida, "%.2f", i->coeficiente); // Caso o expoente seja nulo, apenas o coeficiente é imprimido.
 
         else if (i->expoente == 1 && i->ant->coeficiente > 0)
-          printf("%.2fx+", i->coeficiente); // Caso o expoente seja 1, o sinal de exponenciação é omitido.
+          printf("%.2fx+", i->coeficiente);
 
         else if (i->expoente == 1 && i->ant->expoente == 0)
-          fprintf(saida, "%.2fx", i->coeficiente); // Caso o expoente seja 1, o sinal de exponenciação é omitido.
+          fprintf(saida, "%.2fx", i->coeficiente); // Caso o coeficiente difira de 1 e expoente seja 1, o sinal de exponenciação é omitido.
 
         else if (i->expoente == 1 && i->ant->coeficiente < 0)
-          fprintf(saida, "%.2fx-", i->coeficiente); // Caso o expoente seja 1, o sinal de exponenciação é omitido.
+          fprintf(saida, "%.2fx-", i->coeficiente);
 
         else if (i->ant->coeficiente <= 0)
           fprintf(saida, "%.2fx^%d", i->coeficiente, i->expoente);
@@ -329,7 +331,7 @@ bool ehRaiz (float numero, POLINOMIO polinomio) {
 SOLUCOES raizesPolinomioQuadrado (POLINOMIO polinomio) {
   SOLUCOES solucoes;
 
-  if (grauPolinomio(polinomio) != 2) {
+  if (grauPolinomio(polinomio) != 2) {  // Caso o grau do polinômio difira de 2, -99999 e 99999 são retornados como soluções.
     solucoes.x1 = -99999;
     solucoes.x2 = 99999;
 
@@ -339,21 +341,21 @@ SOLUCOES raizesPolinomioQuadrado (POLINOMIO polinomio) {
   // A solução de polinômios de segundo grau é dada pela Fórmula de Bhaskara:
   float a, b, c, x1, x2, delta;
 
-  a = polinomio.cabeca->ant->coeficiente;
+  a = polinomio.cabeca->ant->coeficiente; // O termo de maior expoente (2) é o último elemento da lista duplamente encadeada ordenada.
   b = polinomio.cabeca->ant->ant->coeficiente;
-  c = polinomio.cabeca->prox->coeficiente;
+  c = polinomio.cabeca->prox->coeficiente;  //O termo independente é o primeiro elemento da lista.
 
-  if (tamanhoPolinomio(polinomio) == 2)
+  if (tamanhoPolinomio(polinomio) == 2) // Caso o polinômio apresente dois termos, apenas o termo independente está ausente (vale 0).
     c = 0;
 
-  else if (tamanhoPolinomio(polinomio) == 1) {
+  else if (tamanhoPolinomio(polinomio) == 1) {  // Caso o polinômio tenha um único termo, apenas o "a" é não nulo.
     b = 0;
     c = 0;
   }
 
   delta = (b*b)-(4*a*c);
 
-  if (delta < 0) {
+  if (delta < 0) {  // Caso a raiz de delta não exista como um número real, -99999 e 99999 são retornados como soluções.
     solucoes.x1 = -99999;
     solucoes.x2 = 99999;
 
@@ -391,26 +393,29 @@ int main(int agrc, char* argv[]) {
 
   // Manipulação de arquivos:
   FILE* entrada = fopen(argv[1], "r"); // Abrindo o arquivo de entrada para leitura.
-  saida = fopen(argv[2], "w");
+  saida = fopen(argv[2], "w");  // Abrindo o arquivo de saída para escrita.
 
   fscanf(entrada, "%d", &qtd_operacoes);  // A primeira linha do arquivo de entrada contém a quantidade de operações contidas no arquivo.
-  fprintf(saida, "%d", qtd_operacoes);
 
-  if (qtd_operacoes <= 0)
+  if (qtd_operacoes <= 0 || entrada == NULL) {
+    fprintf(saida, "-1"); // Caso o número de operações seja inválido ou o arquivo esteja vazio, o número -1 é imprimido na primeira linha do arquivo de saída.
     return 0;
+  }
+
+  fprintf(saida, "%d", qtd_operacoes);  // A primeira linha do arquivo de saída contém a quantidade de operações contidas no arquivo de entrada.
 
   for (int i = 0; i < qtd_operacoes; i++) {
     int qtd_argumentos;
 
     fscanf(entrada, "%d", &operacao);
-    fprintf(saida, "\n%d\n", operacao);
-    fscanf(entrada, "%d", &qtd_argumentos);
+    fprintf(saida, "\n%d\n", operacao);  // Linha do arquivo de saída que especifica o código da operação realizada.
+    fscanf(entrada, "%d", &qtd_argumentos); // O identificador do número de argumentos não é considerado no processamento dos argumentos:
 
-    // Cada argumento possui dois elementos (2*qtd_argumentos) com espaços os separando (2*qtd_argumentos), além do elemento extra indicando o número de argumentos (+1).
-    char* auxiliar1 = malloc(sizeof(int) * (qtd_argumentos*10 + 1));
-    auxiliar1 = fgets(auxiliar1, qtd_argumentos*10+1, entrada);  // Armazenando a string da linha de argumentos.
+    // Cada argumento pode ter até 10 caracteres:
+    char* auxiliar1 = malloc(sizeof(int) * (qtd_argumentos*10));
+    auxiliar1 = fgets(auxiliar1, qtd_argumentos*10, entrada);  // Armazenando a string da linha de argumentos.
 
-    char argumentos1[100];
+    char argumentos1[100];  // Vetor de caracteres que armazena os argumentos.
 
     strcpy(argumentos1, auxiliar1); // Copiando o conteúdo da string auxiliar para o vetor de caracteres para possibilitar a tokenização dos argumentos.
 
@@ -424,7 +429,7 @@ int main(int agrc, char* argv[]) {
     POLINOMIO a;
     inicializaPolinomio(&a);
 
-    POLINOMIO resultado;
+    POLINOMIO resultado;  // Polinômio resultante das operações que retornam polinômios.
     inicializaPolinomio(&resultado);
 
     float coeficiente = 0;
@@ -432,22 +437,22 @@ int main(int agrc, char* argv[]) {
 
     while(tokens1) {
       if (contador % 2 == 0) { // Se o contador for par, o termo é um expoente; caso contrário, um coeficiente.
-        expoente = atoi(tokens1);
+        expoente = atoi(tokens1); // Como expoentes são inteiros, é necessário realizar a conversão string -> int.
         insereTermo(coeficiente, expoente, &a);
       }
 
       else
-        coeficiente = atof(tokens1);
+        coeficiente = atof(tokens1);  // Coeficientes são representados por números reais.
 
       tokens1 = strtok(NULL, " ");
 
       contador++; // O identificador se altera a cada iteração, até o último argumento.
     }
 
-    if (operacao == 4)
+    if (operacao == 4)  // Derivar um polinômio.
       resultado = derivaPolinomio(a);
 
-    if (operacao == 5) {
+    if (operacao == 5) {  // Verifica se um dado número é raiz de um polinômio.
       float raiz;
 
       fscanf(entrada, "%f", &raiz);
@@ -456,19 +461,19 @@ int main(int agrc, char* argv[]) {
       continue;
     }
 
-    if (operacao == 6) {
+    if (operacao == 6) {  // Resolver um polinômio de grau 2:
       SOLUCOES x = raizesPolinomioQuadrado(a);
 
       fprintf(saida, "%.2f %.2f", x.x1, x.x2);
       continue;
     }
 
-    if (operacao == 7) {
+    if (operacao == 7) {  // Imprimir um polinômio em tela:
       imprimePolinomio(a);
       continue;
     }
 
-    if (operacao == 8) {
+    if (operacao == 8) {  // Verificar o grau de um polinômio:
       fprintf(saida, "%d", grauPolinomio(a));
       continue;
     }
@@ -509,38 +514,34 @@ int main(int agrc, char* argv[]) {
         contador++; // O identificador se altera a cada iteração, até o último argumento.
       }
 
-      if (operacao == 1)
+      if (operacao == 1)  // Soma de dois polinômios.
          resultado = somaPolinomios(a, b);
 
-      if (operacao == 2) {
+      if (operacao == 2) {  // Subtração de dois polinômios.
         if (tamanhoPolinomio(a) >= tamanhoPolinomio(b))
-          resultado = subtraiPolinomios(b, a);
+          resultado = subtraiPolinomios(b, a);  // O polinômio com menor número de termos é multiplicado por -1 e então somado ao outro.
 
         else
           resultado = subtraiPolinomios(a, b);
       }
 
-      if (operacao == 3)
+      if (operacao == 3)  // Multiplicação de dois polinômios.
         resultado = multiplicaPolinomios(a, b);
     }
 
-    excluiNulos(resultado);
+    excluiNulos(resultado); // Retirando termos nulos do polinômio resultante.
 
-    TERMO* i = resultado.cabeca->ant;
+    TERMO* i = resultado.cabeca->ant; // Iterador do polinômio.
 
-    fprintf(saida, "%d", tamanhoPolinomio(resultado));
+    fprintf(saida, "%d", tamanhoPolinomio(resultado));  // O primeiro elementos dos argumentos é o número de argumentos do polinômio, que equivale ao número de termos do próprio.
 
-    while (i != resultado.cabeca) {
-      if (i->coeficiente == 0) {
-        i = i->ant;
-        continue;
-      }
-
+    while (i != resultado.cabeca) { // Todos os coeficientes e expoentes do polinômio são separados por espaços.
       fprintf(saida, " %.2f ", i->coeficiente);
       fprintf(saida, "%d", i->expoente);
+
       i = i->ant;
     }
 
-    continue;
+    continue; // Passa para a operação seguinte.
   }
 }
