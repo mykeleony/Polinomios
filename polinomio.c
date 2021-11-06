@@ -1,5 +1,5 @@
 /**************************************************************/
-/* Aluno: Myke Leony dos Santos Amorim
+/* Autor: Myke Leony dos Santos Amorim
 /**************************************************************/
 
 #include <stdio.h>
@@ -234,6 +234,7 @@ POLINOMIO somaPolinomios (POLINOMIO polinomio1, POLINOMIO polinomio2) {
   if (tamanhoPolinomio(polinomio1) >= tamanhoPolinomio(polinomio2)) {
     while (j != polinomio2.cabeca) {
       insereTermo (j->coeficiente, j->expoente, &polinomio1); // Inserindo expoentes não existentes no polinômio com maior (ou igual) número de termos e somando os coeficientes de expoentes preexistentes.
+
       j = j->ant;
     }
 
@@ -244,6 +245,7 @@ POLINOMIO somaPolinomios (POLINOMIO polinomio1, POLINOMIO polinomio2) {
   else {
     while (i != polinomio1.cabeca) {
       insereTermo (i->coeficiente, i->expoente, &polinomio2);
+
       i = i->ant;
     }
 
@@ -512,19 +514,19 @@ int main(int agrc, char* argv[]) {
 
       if (operacao == 2) {
         if (tamanhoPolinomio(a) >= tamanhoPolinomio(b))
-          resultado = subtraiPolinomios(a, b);
+          resultado = subtraiPolinomios(b, a);
 
         else
-          resultado = subtraiPolinomios(b, a);
+          resultado = subtraiPolinomios(a, b);
       }
 
       if (operacao == 3)
         resultado = multiplicaPolinomios(a, b);
     }
 
-    TERMO* i = resultado.cabeca->ant;
-
     excluiNulos(resultado);
+
+    TERMO* i = resultado.cabeca->ant;
 
     fprintf(saida, "%d", tamanhoPolinomio(resultado));
 
@@ -538,8 +540,6 @@ int main(int agrc, char* argv[]) {
       fprintf(saida, "%d", i->expoente);
       i = i->ant;
     }
-
-    destruirPolinomio(&resultado);
 
     continue;
   }
