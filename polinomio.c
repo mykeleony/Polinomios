@@ -548,9 +548,9 @@ int main(int agrc, char* argv[]) {
       i = i->ant;
     }
 
-    destruirPolinomio(&resultado);
+    destruirPolinomio(&resultado);  // Ao fim da operação, o polinômio é reiniciado.
     destruirPolinomio(&a);
-
-    continue; // Passa para a operação seguinte.
   }
+
+  return 0;
 }
