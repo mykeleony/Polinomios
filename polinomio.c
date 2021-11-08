@@ -1,8 +1,8 @@
 /**************************************************************/
-/* Aluno: Myke Leony dos Santos Amorim
-/* Número USP: 12543721
-/* Disciplina/Ano/EP: ACH2023/2021/EP1
+/* Autor: Myke Leony dos Santos Amorim
 /**************************************************************/
+
+// OBS: o uso do -lm na linha de compilação do programa é necessária para garantir que a biblioteca math.h seja incluída na compilação, evitando o erro de referência indefinida para as funções dessa biblioteca.
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -15,6 +15,7 @@
 // Como a informação única de um polinômio são os números de seus expoentes, a chave da lista linear duplamente encadeada será inteira:
 typedef int TIPOCHAVE;
 
+// Arquivo de saída gerado pelo programa:
 FILE* saida;
 
 typedef struct estrutura {
@@ -260,12 +261,12 @@ POLINOMIO multiplicaPolinomios (POLINOMIO polinomio1, POLINOMIO polinomio2) {
   TERMO* i = polinomio1.cabeca->ant;
   TERMO* j = polinomio2.cabeca->ant;
 
-  POLINOMIO resultado;  // Polinômio que conterá o polinômio resultante da multiplicação.
-  inicializaPolinomio(&resultado);
+  POLINOMIO multi;  // Polinômio que conterá o polinômio resultante da multiplicação.
+  inicializaPolinomio(&multi);
 
   while (j != polinomio2.cabeca) {  // Cada termo do polinômio 2 perspassa todos os termos do polinômio 1.
     while (i != polinomio1.cabeca) {  // Multiplicando os coeficientes e somando os expoentes.
-      insereTermo (i->coeficiente * j->coeficiente, i->expoente + j->expoente, &resultado);
+      insereTermo (i->coeficiente * j->coeficiente, i->expoente + j->expoente, &multi);
 
       i = i->ant;
     }
@@ -274,7 +275,7 @@ POLINOMIO multiplicaPolinomios (POLINOMIO polinomio1, POLINOMIO polinomio2) {
     i = polinomio1.cabeca->ant; // Ajusta o iterador novamente ao último elemento do polinômio 1.
   }
 
-  return resultado;
+  return multi;
 }
 
 // Retorna o polinômio resultante da subtração de dois polinômios:
@@ -286,12 +287,12 @@ POLINOMIO subtraiPolinomios (POLINOMIO polinomio1, POLINOMIO polinomio2) {
 
   POLINOMIO polinomio1_negativo = multiplicaPolinomios(polinomio1, negativo); // Multiplicando o polinômio 1 por -1.
 
-  POLINOMIO soma;
+  POLINOMIO subtracao;
 
-  inicializaPolinomio(&soma);
-  soma = somaPolinomios(polinomio2, polinomio1_negativo); // P(x)-P(y) = P(x)+(-(P(y))).
+  inicializaPolinomio(&subtracao);
+  subtracao = somaPolinomios(polinomio2, polinomio1_negativo); // P(x)-P(y) = P(x)+(-(P(y))).
 
-  return soma;
+  return subtracao;
 }
 
 // Retorna a derivada de um polinômio:
@@ -309,9 +310,9 @@ POLINOMIO derivaPolinomio (POLINOMIO polinomio) {
 }
 
 // Verifica se um número é uma raiz de um polinômio:
-bool ehRaiz (float numero, POLINOMIO polinomio) {
+int ehRaiz (float numero, POLINOMIO polinomio) {
   if (grauPolinomio(polinomio) < 1)  // Se o polinômio for nulo, inválido ou possuir apenas o termo independente, o polinômio não apresenta raiz.
-    return false;
+    return 1;
 
   TERMO* i = polinomio.cabeca->ant;
   float solucao = 0;
@@ -322,9 +323,9 @@ bool ehRaiz (float numero, POLINOMIO polinomio) {
   }
 
   if (solucao == 0) // Se a substituição da variável resultar em 0, o número inserido é uma raiz do polinômio.
-    return true;
+    return 0;
 
-  return false;
+  return 1;
 }
 
 // Retorna as soluções de um polinômio de grau 2:
@@ -332,8 +333,8 @@ SOLUCOES raizesPolinomioQuadrado (POLINOMIO polinomio) {
   SOLUCOES solucoes;
 
   if (grauPolinomio(polinomio) != 2) {  // Caso o grau do polinômio difira de 2, -99999 e 99999 são retornados como soluções.
-    solucoes.x1 = -99999;
-    solucoes.x2 = 99999;
+    solucoes.x1 = 99999;
+    solucoes.x2 = -99999;
 
     return solucoes;
   }
@@ -345,10 +346,13 @@ SOLUCOES raizesPolinomioQuadrado (POLINOMIO polinomio) {
   b = polinomio.cabeca->ant->ant->coeficiente;
   c = polinomio.cabeca->prox->coeficiente;  //O termo independente é o primeiro elemento da lista.
 
-  if (tamanhoPolinomio(polinomio) == 2) // Caso o polinômio apresente dois termos, apenas o termo independente está ausente (vale 0).
+  if (tamanhoPolinomio(polinomio) == 2 && polinomio.cabeca->ant->ant->expoente == 0)  // Há apenas o coeficiente de x^2 e o termo independente no polinômio.
+    b = 0;
+
+  else if (tamanhoPolinomio(polinomio) == 2 && polinomio.cabeca->ant->ant->expoente == 1) // Há apenas os coeficientes de x^2 e de x no polinômio.
     c = 0;
 
-  else if (tamanhoPolinomio(polinomio) == 1) {  // Caso o polinômio tenha um único termo, apenas o "a" é não nulo.
+  else if (tamanhoPolinomio(polinomio) == 1) {  // Caso o polinômio tenha um único termo, apenas o coeficiente de x^2 é não nulo.
     b = 0;
     c = 0;
   }
@@ -356,8 +360,8 @@ SOLUCOES raizesPolinomioQuadrado (POLINOMIO polinomio) {
   delta = (b*b)-(4*a*c);
 
   if (delta < 0) {  // Caso a raiz de delta não exista como um número real, -99999 e 99999 são retornados como soluções.
-    solucoes.x1 = -99999;
-    solucoes.x2 = 99999;
+    solucoes.x1 = 99999;
+    solucoes.x2 = -99999;
 
     return solucoes;
   }
@@ -527,6 +531,8 @@ int main(int agrc, char* argv[]) {
 
       if (operacao == 3)  // Multiplicação de dois polinômios.
         resultado = multiplicaPolinomios(a, b);
+
+      destruirPolinomio(&b);
     }
 
     excluiNulos(resultado); // Retirando termos nulos do polinômio resultante.
@@ -541,6 +547,9 @@ int main(int agrc, char* argv[]) {
 
       i = i->ant;
     }
+
+    destruirPolinomio(&resultado);
+    destruirPolinomio(&a);
 
     continue; // Passa para a operação seguinte.
   }
